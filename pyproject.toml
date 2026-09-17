@@ -1,0 +1,9 @@
+[project]
+name = "supplier-lifecycle-demo"
+version = "2.0.0"
+description = "供应商产品全生命周期性能与成本仿真 Demo"
+requires-python = ">=3.10"
+dependencies = ["PyMuPDF>=1.24,<2", "Pillow>=10.4,<13"]
+
+[tool.ruff]
+line-length = 120

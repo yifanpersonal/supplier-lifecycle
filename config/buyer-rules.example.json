@@ -1,0 +1,8 @@
+{
+  "title": "采购要求数值规则格式示例",
+  "note": "仅演示格式，不是新奥确认要求；请由采购方填写真实指标后再勾选确认。project 必须匹配检验项目名称，unit 必须匹配实测文本单位。code 可选，默认整机产品编码。",
+  "version": "example-1",
+  "rules": [
+    {"project": "请替换为真实检验项目名称", "unit": "ml/min", "max": 0.25, "mandatory": true}
+  ]
+}

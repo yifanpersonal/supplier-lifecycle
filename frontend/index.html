@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>产品全周期分析可信可视平台</title>
+  <meta name="description" content="基于供应商真实批次数据的产品生命周期演示工作台">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="workspace-label">分析工作台</div>
+    <nav aria-label="主导航">
+      <button class="nav active" data-page="structure" title="产品信息"><span class="nav-index">01</span><b>产品信息</b></button>
+      <button class="nav" data-page="overview" title="产品生命周期仿真"><span class="nav-index">02</span><b>产品生命周期仿真</b></button>
+      <button class="nav" data-page="cost" title="成本分析"><span class="nav-index">03</span><b>成本分析</b></button>
+      <button class="nav" data-page="visual" title="产品可视化"><span class="nav-index">04</span><b>产品可视化</b></button>
+      <button class="nav" data-page="evidence" title="决策报告"><span class="nav-index">05</span><b>决策报告</b></button>
+    </nav>
+    <div class="sidebar-note"><span class="small-label">分析引擎</span><strong>Qwen + 计算引擎</strong><p>资料检索与分析<br>生命周期与成本计算</p><span class="engine-tag" id="engine-status">正在读取配置</span><button id="check-provider" class="text-button">检查模型连接</button></div>
+    <div class="sidebar-footer">VERSION 2.0<span>供应商产品分析</span></div>
+  </aside>
+  <main>
+    <header class="topbar"><div class="platform-brand"><button id="sidebar-toggle" class="sidebar-toggle" aria-label="收起侧边栏" aria-expanded="true" aria-controls="sidebar">☰</button><strong>产品全周期分析可信可视平台</strong></div><span id="page-label">产品信息</span></header>
+    <div class="content">
+      <section class="page-heading"><div><div class="eyebrow">PRODUCT LIFECYCLE ANALYSIS</div><h1 id="page-title">看见产品的整个生命周期</h1><p id="page-description">从真实部件与批次出发，探索不同场景下的性能、维护与成本。</p></div><button id="upload" class="button secondary">＋ 资料与知识库</button></section>
+      <div id="global-message" class="message" role="status" aria-live="polite">正在读取供应商 Excel…</div>
+      <section id="job-panel" class="job-panel" hidden aria-live="polite"></section>
+      <section class="product-strip" id="product-strip" aria-label="当前产品"></section>
+      <section id="page-overview" class="page"><section class="panel ai-panel" data-ai-stage="lifetime"><div class="panel-heading"><div><span class="ai-kicker">QWEN ANALYSIS</span><h2>寿命依据与模型建议</h2><p>联网查找适用机理与文献，说明模型条件、参数范围和证据缺口。</p></div><button class="button primary ai-run" data-stage="lifetime">运行分析</button></div><div class="ai-result" id="ai-lifetime"><p class="field-note">尚未运行。分析结果将展示要点、来源和待补充资料。</p></div></section>
+        <div class="work-grid">
+          <section class="panel scenario-panel"><div class="panel-heading"><h2>部署场景</h2><span class="step-label">01 / INPUT</span></div>
+            <form id="scenario-form">
+              <label>目标产品<select name="product_id" id="product-select"></select></label>
+              <label>工程名称<input name="project_name" value="燃气入户阀门评估" maxlength="100" required></label>
+              <div class="form-grid"><label>部署地点<select name="location" id="location"><option>廊坊</option><option>广州</option><option>成都</option><option>自定义</option></select></label><label>预测年限<input name="years" type="number" value="20" min="1" max="40" step="1" required><span class="unit">年</span></label></div>
+              <label id="custom-location-wrap" hidden>自定义地点<input id="custom-location" maxlength="100" placeholder="输入地点名称"></label>
+              <label>安装环境<select name="exposure"><option value="indoor">室内 · 一般环境</option><option value="outdoor">室外 · 暴露环境</option><option value="coastal">沿海 · 腐蚀性环境</option></select></label>
+              <div class="form-grid"><label>平均温度<input name="temperature" type="number" value="15" min="-30" max="60" step="0.1" required><span class="unit">℃</span></label><label>相对湿度<input name="humidity" type="number" value="60" min="0" max="100" step="1" required><span class="unit">%</span></label></div>
+              <div class="form-grid"><label>年启闭次数<input name="cycles" type="number" value="52" min="0" max="100000" step="1" required></label><label>部署数量<input name="quantity" type="number" value="100" min="1" max="100000" step="1" required><span class="unit">台</span></label></div>
+              <div class="form-grid"><label>预警线<input name="warning" type="number" value="70" min="1" max="99" step="1" required></label><label>失效阈值<input name="failure" type="number" value="45" min="1" max="98" step="1" required></label></div>
+              <p class="field-note">地点仅载入可编辑的演示温湿度，不是实时气象。阈值为健康指数假设，不是安全标准。</p>
+              <details class="assumptions"><summary>费用与模型假设 <span>可编辑</span></summary><div id="assumptions-fields"></div></details>
+              <button class="button primary wide" id="run" type="submit">运行生命周期仿真 <span>→</span></button>
+              <p id="dirty-note" class="dirty-note" hidden>场景已修改，请重新运行以更新结果。</p>
+            </form>
+          </section>
+          <div class="results-column">
+            <div id="metrics" class="metrics"></div>
+            <section class="panel forecast-panel"><div class="panel-heading"><div><h2>全生命周期性能预测</h2><p id="forecast-subtitle">五个关键系统 · 月步长推演</p></div><span class="pill subtle">02 / SIMULATION</span></div>
+              <div class="chart-toolbar"><label>曲线视图<select id="curve-mode"><option value="baseline">自然衰减 · 不维护</option><option value="preventive">预防性维护 · 更换后恢复</option><option value="corrective">到失效阈值更换 · 恢复</option></select></label><span id="run-context"></span></div>
+              <div id="chart-legend" class="legend"></div>
+              <div id="health-chart" class="chart" aria-label="生命周期健康指数曲线"></div>
+              <div class="time-control"><button id="play" class="play" aria-label="播放时间轴">▶</button><div class="time-track"><div class="time-label"><span>查看时间点</span><strong id="year-label">第 0 年</strong></div><input id="year-slider" type="range" min="0" max="240" value="0" step="1" aria-label="预测月份"><div class="range-labels"><span>投运</span><span id="range-end">20 年</span></div></div></div>
+              <p class="chart-caption">健康指数为归一化演示量，不等于故障概率。虚线分别表示预警线与失效阈值。</p>
+            </section>
+            <section class="panel"><div class="panel-heading"><h2>当前状态与风险</h2><span id="state-year" class="muted">第 0 年</span></div><div id="system-cards" class="system-grid"></div></section>
+          </div>
+        </div>
+        <section class="panel maintenance"><div class="panel-heading"><div><h2>维护节点与预算</h2><p>月度触线更换 · 与当前维护策略一致</p></div><label class="compact-label">维护策略<select id="maintenance-policy"><option value="preventive">预防性维护</option><option value="corrective">到失效阈值更换</option></select></label></div><div id="maintenance-summary"></div><div id="maintenance-table" class="table-scroll"></div></section>
+      </section>
+      <section id="page-structure" class="page active"><section class="panel ai-panel" data-ai-stage="quality"><div class="panel-heading"><div><span class="ai-kicker">QWEN ANALYSIS</span><h2>质量与标准分析</h2><p>依据已上传的采购要求与质量资料，核验覆盖情况并解释差异。</p></div><button class="button primary ai-run" data-stage="quality">运行分析</button></div><div class="ai-result" id="ai-quality"><p class="field-note">尚未运行。分析结果将展示要点、来源和待补充资料。</p></div></section><div class="structure-grid"><section class="panel tree-panel"><div class="panel-heading"><h2>产品层级结构</h2><span id="tree-count"></span></div><input id="tree-search" type="search" placeholder="搜索部件名称、编码或批号" aria-label="搜索产品结构"><div class="tree-actions"><button id="collapse-tree" class="text-button">收起层级</button><span>保留原始展开路径</span></div><div id="product-tree" class="product-tree" role="tree" aria-label="产品部件树"></div></section><section id="node-detail" class="panel detail-panel"></section></div></section>
+      <section id="page-cost" class="page"><section class="panel ai-panel" data-ai-stage="cost"><div class="panel-heading"><div><span class="ai-kicker">QWEN ANALYSIS</span><h2>维护费用分析</h2><p>结合供应商报价与公开参考资料，解释当前费用假设和适用范围。</p></div><button class="button primary ai-run" data-stage="cost">运行分析</button></div><div class="ai-result" id="ai-cost"><p class="field-note">尚未运行。分析结果将展示要点、来源和待补充资料。</p></div></section><div class="cost-top"><div><h2>同一产品，不同维护策略</h2><p>比较未折现累计支出；不把未维护的低支出视为安全或采购优势。</p></div><button id="save-comparison" class="button primary">＋ 保存当前场景对比</button></div><div class="cost-grid"><section class="panel"><div class="panel-heading"><h2>生命周期成本构成</h2><span id="cost-horizon"></span></div><div id="cost-bars" class="cost-bars"></div><div id="cost-breakdown" class="table-scroll"></div></section><section class="panel"><div class="panel-heading"><h2>累计支出曲线</h2><span class="muted">人民币 / 全部设备</span></div><div id="cost-chart" class="chart"></div><div id="cost-caption" class="field-note"></div></section></div><section class="panel"><div class="panel-heading"><div><h2>部署场景对比</h2><p>最多保存三个运行快照；同产品、同年限和同数量才作同口径比较。</p></div><button id="clear-comparisons" class="text-button">清空快照</button></div><div id="comparison-cards" class="comparison-cards"></div></section></section>
+      <section id="page-visual" class="page">
+  <div class="visual-layout"><section class="panel panorama-panel"><div class="panel-heading"><div><h2>360° 产品可视化</h2><p id="visual-caption">关键系统空间示意，可拖动旋转；不是实物 CAD 模型。</p></div><span class="pill">可交互</span></div>
+  <div class="viewer-toolbar"><button id="view-model" class="button secondary">结构示意</button><select id="visual-asset" aria-label="选择上传的产品图像"><option value="">选择真实图片或全景</option></select><button id="view-reset" class="button secondary">复位</button><button id="view-fullscreen" class="button secondary">全屏</button></div>
+  <div id="viewer" class="viewer" tabindex="0" aria-label="可旋转的产品示意图，方向键旋转"><canvas id="product-canvas"></canvas><canvas id="panorama-canvas" hidden></canvas><img id="product-photo" hidden alt="上传的产品照片"><div class="viewer-hint" id="viewer-hint">拖动旋转 · 滚轮缩放 · 点击系统查看说明</div><span class="viewer-badge" id="viewer-badge">结构示意 / 非实物模型</span></div>
+  <div class="viewer-controls"><button id="view-play" class="button secondary">自动旋转</button><label>观察角度<input id="view-angle" type="range" min="0" max="360" value="30"></label><label>部件展开<input id="view-explode" type="range" min="0" max="100" value="0"></label></div>
+  </section><section class="panel visual-details"><span class="eyebrow">COMPONENT VIEW</span><h2 id="visual-part-name">阀体结构</h2><p id="visual-part-description"></p><div id="visual-parts"></div><button id="visual-open-part" class="button secondary">查看部件资料</button><p class="field-note">可上传产品照片或 2:1 等距柱状全景图。全景浏览支持拖动和缩放；普通照片以原图展示。</p><button id="visual-upload" class="text-button">上传产品图像 →</button></section></div>
+<section class="panel ai-panel" data-ai-stage="visual"><div class="panel-heading"><div><span class="ai-kicker">QWEN ANALYSIS</span><h2>产品图像与结构分析</h2><p>识别真实图片中的文字和可见结构；缺少实物图片时明确说明可视化边界。</p></div><button class="button primary ai-run" data-stage="visual">运行分析</button></div><div class="ai-result" id="ai-visual"><p class="field-note">尚未运行。分析结果将展示要点、来源和待补充资料。</p></div></section></section>
+      <section id="page-evidence" class="page"><section class="panel ai-panel" data-ai-stage="report"><div class="panel-heading"><div><span class="ai-kicker">QWEN ANALYSIS</span><h2>决策报告与选择建议</h2><p>依次分析前四个模块，并汇总程序计算、证据缺口与选择理由。</p></div><button class="button primary ai-run" data-stage="report">运行分析</button></div><div class="ai-result" id="ai-report"><p class="field-note">尚未运行。分析结果将展示要点、来源和待补充资料。</p></div></section><details class="report-basis"><summary>查看计算依据与源数据概况</summary><div id="evidence-metrics" class="metrics"></div><div class="evidence-grid"><section class="panel"><div class="panel-heading"><h2>事实、假设与解释依据</h2><span class="pill subtle">本地计算依据</span></div><div id="reasoning"></div></section><section class="panel"><div class="panel-heading"><h2>数据质量提示</h2></div><div id="data-warnings"></div><h3>模型边界</h3><div id="model-limitations"></div></section></div><section class="panel"><div class="panel-heading"><h2>生产过程统计</h2><span class="pill amber">订单归属待核实</span></div><div id="production-table" class="table-scroll"></div></section></details></section>
+      <footer class="page-footer">数据来源：鑫豪斯供应商工作簿<span>规则演示，不用于燃气设备安全判定或正式采购定标。</span></footer>
+    </div>
+  </main>
+  <dialog id="upload-dialog" class="knowledge-dialog"><div class="panel-heading"><div><h2>资料与知识库</h2><p>上传资料归属当前产品；文档正文可追溯，原始文件索引不替代正文。</p></div><button id="close-dialog" class="text-button" aria-label="关闭">关闭 ×</button></div>
+  <form id="upload-form"><div class="form-grid"><label>资料类别<select id="document-kind"><option value="supplier_evidence">供应商质量与技术资料</option><option value="buyer_requirement">采购方要求</option><option value="quote">采购与维护报价</option><option value="reference">参考资料</option><option value="visual">产品照片或全景</option></select></label><label>选择文件<input id="document-file" type="file" accept=".xlsx,.pdf,.png,.jpg,.jpeg,.webp,.txt,.md,.json,.csv" required></label></div>
+  <label class="check-label" id="confirmed-wrap" hidden><input id="document-confirmed" type="checkbox">我确认这份要求由采购方确认，适用于当前产品</label>
+  <label class="check-label" id="panorama-wrap" hidden><input id="document-panorama" type="checkbox">这是一张 2:1 等距柱状全景图</label>
+  <div class="action-row"><button class="button primary" id="submit-upload">上传并解析</button><button type="button" id="build-index" class="button secondary">构建语义索引</button></div><p class="field-note">单文件不超过 24 MB。扫描 PDF 和图片 OCR 需要 Qwen。语义索引使用向量模型；未构建时仍可关键词检索。</p></form>
+  <p id="import-status" role="status"></p><div id="knowledge-stats" class="field-note"></div><div id="document-list" class="table-scroll"></div>
+  <h3>检索资料</h3><form id="knowledge-search-form" class="search-row"><input id="knowledge-query" maxlength="500" required placeholder="例如：密封性检验要求和实测值"><button class="button secondary">检索</button></form><div id="knowledge-results"></div></dialog>
+  <dialog id="source-dialog"><div class="panel-heading"><h2 id="source-title">资料正文</h2><button id="close-source" class="text-button">关闭 ×</button></div><div id="source-content"></div></dialog>
+  <script type="module" src="/js/app.js"></script>
+</body></html>
